@@ -39,7 +39,6 @@ const ajax = axios.create({
 
 ajax.interceptors.response.use(
     response => {
-        console.log(response);
         return response;
         
     },

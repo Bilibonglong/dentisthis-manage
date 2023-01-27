@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>牙医后台管理系统</span>
       </div>
-      <el-form label-width="80px" :model="form" ref="form" :rules="rules">
+      <el-form label-width="80px" :model="loginform" ref="form" :rules="rules">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="loginform.userid"></el-input>
         </el-form-item>
@@ -29,9 +29,7 @@ export default {
         password: "",
       },
       rules: {
-        username: [
-          { required: false, message: "请输入用户名", trigger: "blur" }
-        ],
+        username: [{ required: false, message: "请输入用户名", trigger: "blur" }],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
     };
@@ -45,7 +43,9 @@ export default {
     }),
     login() {
       //.then((data)=>{ })里的data是指接口成功返回的数据,包含请求头,请求体,等信息;
-        this.$api.login.login(this.loginform.userid, this.loginform.password).then((res) => {
+      this.$api.login
+        .login(this.loginform.userid, this.loginform.password)
+        .then((res) => {
           console.log(res);
           const { response, success, msg } = res.data;
           if (success) {
@@ -75,16 +75,16 @@ export default {
   position: absolute;
   background-size: cover;
   // background: url('../assets/bg.jpg') center no-repeat;
-  background: url('../../assets/pexels-david-mceachan-91413.jpg') no-repeat;
+  background: url("../../assets/pexels-david-mceachan-91413.jpg") no-repeat;
   .el-card {
-      background: #65768557;
+    background: #65768557;
   }
   .box-card {
     width: 450px;
     margin: 200px auto;
     color: #fff;
     .el-form .el-form-item__label {
-        color: #fff;
+      color: #fff;
     }
     .el-card__header {
       font-size: 34px;

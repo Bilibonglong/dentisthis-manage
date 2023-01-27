@@ -8,6 +8,7 @@ Vue.use(Vuex);
 
 //require.context(文件的路径，是否遍历文件的子目录，匹配文件的正则)接受三个参数
 const modulesFiles=require.context('./modules', true, /\.js$/);
+
 //keys() 从数组中创建一个数组迭代对象， 该对象包含了数组的键：
 //reduce(fn,可选。传递给函数的初始值)接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值。
 //传入的函数==》 fn(total, currentValue, index, arr)
@@ -20,6 +21,8 @@ const modules=modulesFiles.keys().reduce((modules,modulePath)=>{
     modules[moduleName]=modulesFiles(modulePath).default;
     return modules;
 },{});
+
+console.log(modules);
 
 const store=new Vuex.Store({
     modules:modules,
