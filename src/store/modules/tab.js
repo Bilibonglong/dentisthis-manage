@@ -1,5 +1,5 @@
 export default {
-    namespaced:true,
+    namespaced:false,
     state: {
         isCollapse: false, //控制菜单的展开还是收起
 

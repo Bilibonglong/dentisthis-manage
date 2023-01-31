@@ -28,7 +28,16 @@ const routes = [{
                     isAuth: true
                 },
             },
-
+            //首页
+            {
+                path: '/test',
+                name: 'test',
+                component: () => import('@/views/test'),
+                meta: {
+                    title: '首页',
+                    isAuth: true
+                },
+            },
             //患者
             {
                 path: '/patient',
@@ -39,16 +48,37 @@ const routes = [{
                     isAuth: true
                 }
             },
-            //用户
+            //库房
             {
-                path: '/user',
-                name: 'user',
-                component: () => import('@/views/user'),
+                path: '/storehouse',
+                name: 'index',
+                component: () => import('@/views/storehouse'),
                 meta: {
-                    title: '用户页面',
+                    title: '库房管理',
                     isAuth: true
                 }
             },
+            //预约
+            {
+                path: '/subscribe',
+                name: 'subscribe',
+                component: () => import('@/views/subscribe'),
+                meta: {
+                    title: '预约',
+                    isAuth: true
+                }
+            },
+            //预约
+            {
+                path: '/consultingroom',
+                name: 'consultingroom',
+                component: () => import('@/views/system'),
+                meta: {
+                    title: '预约',
+                    isAuth: true
+                }
+            },
+
         ]
     }
 ]

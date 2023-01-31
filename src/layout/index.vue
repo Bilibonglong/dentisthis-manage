@@ -36,14 +36,15 @@ export default {
 .el-aside {
   .element::-webkit-scrollbar {
     width: 0 !important;
+    
   }
 
-  .element {
-    -ms-overflow-style: none;
-  }
+  // .element {
+  //   -ms-overflow-style: none;
+  // }
 
-  .element {
-    overflow: -moz-scrollbars-none;
-  }
+  // .element {
+  //   overflow: -moz-scrollbars-none;
+  // }
 }
 </style>
