@@ -52,6 +52,10 @@ export default {
             try {
               this.setTokenInfo(response);
               this.setUserInfo(response.userInfo);
+              if(this.$route.query.redirecUtl)
+              {
+                
+              }
             } catch (err) {
               console.log(err);
             }

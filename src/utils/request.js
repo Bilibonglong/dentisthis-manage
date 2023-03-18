@@ -25,6 +25,8 @@ const ajax = axios.create({
 
  ajax.interceptors.request.use(
     (config) => {
+
+        console.log(config);
         //添加token
         const token = store.getters['token/accessToken'];
         console.log(token);

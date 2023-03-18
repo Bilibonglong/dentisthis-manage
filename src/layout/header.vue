@@ -24,8 +24,8 @@
           ></el-avatar>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>黄金糕</el-dropdown-item>
-          <el-dropdown-item>狮子头</el-dropdown-item>
+          <el-dropdown-item>退出登录</el-dropdown-item>
+          <el-dropdown-item>修改密码</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>

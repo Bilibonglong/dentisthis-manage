@@ -1,0 +1,44 @@
+{
+  "id": "3874938",
+  "name": "dentisthis-manage",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "牙医系统毕业设计前端后台管理系统",
+  "glyphs": [
+    {
+      "icon_id": "376212",
+      "name": "钱包",
+      "font_class": "qianbao",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
+      "icon_id": "577362",
+      "name": "时钟",
+      "font_class": "shizhong",
+      "unicode": "e74f",
+      "unicode_decimal": 59215
+    },
+    {
+      "icon_id": "7629066",
+      "name": "钱包",
+      "font_class": "qianbao1",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
+      "icon_id": "10056232",
+      "name": "警报",
+      "font_class": "jingbao",
+      "unicode": "e701",
+      "unicode_decimal": 59137
+    },
+    {
+      "icon_id": "14015754",
+      "name": "-_病人",
+      "font_class": "-_bingren",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    }
+  ]
+}

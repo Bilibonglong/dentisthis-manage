@@ -27,16 +27,13 @@ const routes = [{
                     title: '首页',
                     isAuth: true
                 },
-            },
-            //首页
-            {
-                path: '/test',
-                name: 'test',
-                component: () => import('@/views/test'),
-                meta: {
-                    title: '首页',
-                    isAuth: true
-                },
+                children: [
+                    // {
+                    //     path:'visittoday',
+                    //     name:'visittoday',
+                    //     component:()=>import('@/views/home/views/visittoday/index')
+                    // }
+                ]
             },
             //患者
             {

@@ -90,7 +90,7 @@ export default {
           url: "User/index",
         },
         {
-          label: "诊室管理",
+          label: "诊所管理",
           icon: "location",
           children: [
             {
@@ -104,7 +104,7 @@ export default {
               url: "storehouse/index",
             },
             {
-              label: "诊室设置",
+              label: "诊所设置",
               icon: "setting",
               url: "storehouse/index",
             },
@@ -115,20 +115,15 @@ export default {
           icon: "location",
           children: [
             {
-              label: "员工管理",
+              label: "药品库存",
               icon: "setting",
               url: "system/employee",
             },
             {
-              label: "角色设置",
+              label: "耗材库存",
               icon: "setting",
               url: "storehouse/index",
-            },
-            {
-              label: "诊室设置",
-              icon: "setting",
-              url: "storehouse/index",
-            },
+            }
           ],
         },
         {
