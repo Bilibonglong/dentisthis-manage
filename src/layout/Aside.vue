@@ -1,186 +1,108 @@
 <template>
-  <div class="aside">
+  <div class="slide">
     <el-menu
-      default-active="$route.path"
-      class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
+      default-active="$route.name"
+      :router="true"
+      background-color="#2A2D38"
+      text-color="#bfcbd9"
+      active-text-color="#049eff"
       :collapse="isCollapse"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b"
     >
-      <h3 style="height: auto">牙医管家</h3>
-      <el-menu-item
-        @click="clickMenu(item)"
-        v-for="item in noChildren"
-        :key="item.name"
-        :index="item.name"
-      >
-        <i :class="`el-icon-${item.icon}`"></i>
-        <span slot="title">{{ item.label }}</span>
+      <el-menu-item index="/home" @click.native="clickMenu({ path: '/home', name: 'home', label: '首页' })">
+        <i class="el-icon-s-home"></i>
+        <span>首页</span>
       </el-menu-item>
-      <el-submenu
-        v-for="item in hasChildren"
-        :key="item.label"
-        :index="item.label"
-      >
+
+      <el-menu-item index="/patient" @click.native="clickMenu({ path: '/patient', name: 'patient', label: '患者' })">
+        <i class="el-icon-s-home"></i>
+        <span>患者</span>
+      </el-menu-item>
+
+      
+      <el-menu-item index="/subscribe" @click.native="clickMenu({ path: '/subscribe', name: 'subscribe', label: '预约' })">
+        <i class="el-icon-s-home"></i>
+        <span>预约</span>
+      </el-menu-item>
+
+      <!-- 诊所管理 -->
+      <el-submenu index="consultingroom">
         <template slot="title">
-          <i :class="`el-icon-${item.icon}`"></i>
-          <span slot="title">{{ item.label }}</span>
+          <i class="el-icon-notebook-2"></i>
+          <span>诊所管理</span>
         </template>
-        <el-menu-item-group
-          v-for="subItem in item.children"
-          :key="subItem.path"
-        >
-          <el-menu-item @click="clickMenu(subItem)" :index="subItem.path">{{
-            subItem.label
-          }}</el-menu-item>
-        </el-menu-item-group>
+        <el-menu-item index="/consultingroom/employee" :to="{ name: 'employee'}" @click.native="clickMenu({ path: '/employee', name: 'employee', label: '员工管理' })">
+          员工管理
+        </el-menu-item>
+        <el-menu-item index="/consultingroom/supplier/supplierList" :to="{ name: 'supplierList' }" @click.native="clickMenu({ path: '/supplierList', name: 'supplierList', label: '供应商列表' })">
+          角色管理
+        </el-menu-item>
+        <el-menu-item index="/consultingroom/warehouse/warehouseList" :to="{ name: 'warehouseList'}" @click.native="clickMenu({ path: '/warehouseList', name: 'warehouseList', label: '仓库信息' })">
+          诊所管理
+        </el-menu-item>
+      </el-submenu>
+
+      <!-- 系统设置 -->
+      <el-submenu index="sysSeting">
+        <template slot="title">
+          <i class="el-icon-notebook-2"></i>
+          <span>系统设置</span>
+        </template>
+        <el-menu-item index="/baseInfo/goods/spuList" :to="{ name: 'spuList'}" @click.native="clickMenu({ path: '/spuList', name: 'spuList', label: '货品档案' })">
+          病历模板
+        </el-menu-item>
+        <el-menu-item index="/baseInfo/supplier/supplierList" :to="{ name: 'supplierList' }" @click.native="clickMenu({ path: '/supplierList', name: 'supplierList', label: '供应商列表' })">
+          症状库
+        </el-menu-item>
+      </el-submenu>
+
+      <!--库房管理 -->
+      <el-submenu index="warehouseManage">
+        <template slot="title">
+          <i class="el-icon-s-home"></i>
+          <span>库房管理</span>
+        </template>
+        <el-menu-item index="/warehouseManage/warehouse/warehouseManage" :to="{ name: 'warehouseManage'}" @click.native="clickMenu({ path: '/warehouseManage', name: 'warehouseManage', label: '仓库管理' })">
+          药品库存
+        </el-menu-item>
+        <el-menu-item index="/warehouseManage/storageManage/storageBilling" :to="{ name: 'storageBilling'}" @click.native="clickMenu({ path: '/storageBilling', name: 'storageBilling', label: '入库管理' })">
+          耗材库存
+        </el-menu-item>
       </el-submenu>
     </el-menu>
   </div>
 </template>
 
-<style lang="less">
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 150px;
-  min-height: 400px;
-}
-.aside {
-  height: 100vh;
-  width: 150px;
-  background-color: #545c64;
-}
-
-.el-menu {
-  height: auto;
-  /* -webkit-overflow-scrolling: display: none;; */
-  border: none;
-  h3 {
-    text-align: center;
-  }
-}
-</style>
-
 <script>
 export default {
   data() {
-    return {
-      menu: [
-        {
-          path: "/home",
-          name: "home",
-          label: "首页",
-          icon: "s-home",
-          url: "home/index",
-        },
-        {
-          path: "/patient",
-          name: "patient",
-          label: "患者",
-          icon: "video-play",
-          url: "mall/index",
-        },
-        {
-          path: "/subscribe",
-          name: "subscribe",
-          label: "预约",
-          icon: "user",
-          url: "User/index",
-        },
-        {
-          label: "诊所管理",
-          icon: "location",
-          children: [
-            {
-              label: "员工管理",
-              icon: "setting",
-              url: "system/employee",
-            },
-            {
-              label: "角色设置",
-              icon: "setting",
-              url: "storehouse/index",
-            },
-            {
-              label: "诊所设置",
-              icon: "setting",
-              url: "storehouse/index",
-            },
-          ],
-        },
-        {
-          label: "库房管理",
-          icon: "location",
-          children: [
-            {
-              label: "药品库存",
-              icon: "setting",
-              url: "system/employee",
-            },
-            {
-              label: "耗材库存",
-              icon: "setting",
-              url: "storehouse/index",
-            }
-          ],
-        },
-        {
-          label: "系统设置",
-          icon: "location",
-          children: [
-            {
-              label: "病例模板",
-              icon: "setting",
-              url: "system/employee",
-            },
-            {
-              label: "症状库",
-              icon: "setting",
-              url: "storehouse/index",
-            },
-
-          ],
-        },
-      ],
-      // isCollapse: false,
-    };
+    return {};
   },
-  methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
-
-    clickMenu(item) {
-      //当页面的路由与跳转路由不一致才允许跳转
-      if (this.$route.path != item.path) {
-        this.$router.push(item.path);
-      }
-
-      this.$store.commit("setBreadcrumb", item);
-    },
-  },
-  //计算属性
   computed: {
-    //没有子菜单
-    noChildren() {
-      return this.menu.filter((item) => !item.children);
-    },
-
-    //二级菜单
-    hasChildren() {
-      console.log("asd");
-      console.log(this.menu);
-      return this.menu.filter((item) => item.children);
-    },
-
     isCollapse() {
       return this.$store.state.tab.isCollapse;
     },
   },
+  methods: {
+    clickMenu(item) {
+      this.$router.push({
+        name: item.name,
+      });
+      this.$store.commit('selectMenu', item);
+    },
+  },
 };
 </script>
+<style lang="less" scoped>
+.slide {
+  height: 100%;
+  overflow: hidden;
+  .el-menu {
+    min-height: 100%;
+    // color: #bfcbd9;
+    background-color:rgb(42, 45, 56);
+
+    text-align: left;
+    border-right: none;
+  }
+}
+</style>

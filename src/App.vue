@@ -18,5 +18,6 @@ html, body {
 }
 #app {
   height: 100vh;
+  //width: 100vh;
 }
 </style>> 

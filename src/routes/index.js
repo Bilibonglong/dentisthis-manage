@@ -27,21 +27,26 @@ const routes = [{
                     title: '首页',
                     isAuth: true
                 },
-                children: [
-                    // {
-                    //     path:'visittoday',
-                    //     name:'visittoday',
-                    //     component:()=>import('@/views/home/views/visittoday/index')
-                    // }
-                ]
+                children: []
             },
             //患者
             {
                 path: '/patient',
-                name: 'index',
+                name: 'patient',
                 component: () => import('@/views/patient'),
                 meta: {
-                    title: '患者页面',
+                    title: '患者管理',
+                    isAuth: true
+                }
+            },
+
+            //预约
+            {
+                path: '/subscribe',
+                name: 'subscribe',
+                component: () => import('@/views/subscribe'),
+                meta: {
+                    title: '预约',
                     isAuth: true
                 }
             },
@@ -57,23 +62,38 @@ const routes = [{
             },
             //预约
             {
-                path: '/subscribe',
-                name: 'subscribe',
-                component: () => import('@/views/subscribe'),
-                meta: {
-                    title: '预约',
-                    isAuth: true
-                }
-            },
-            //预约
-            {
                 path: '/consultingroom',
                 name: 'consultingroom',
-                component: () => import('@/views/system'),
+                component: () => import('@/views/consultingroom'),
                 meta: {
                     title: '预约',
                     isAuth: true
-                }
+                },
+                children: [{
+                        path: 'employee',
+                        name: 'employee',
+                        component: () => import('@/views/consultingroom/views/employee'),
+                        meta: {
+                            title: '员工管理'
+                        },
+                    },
+                    {
+                        path: 'role',
+                        name: 'role',
+                        component: () => import('@/views/consultingroom/views/role'),
+                        meta: {
+                            title: '角色管理'
+                        },
+                    },
+                    {
+                        path: 'setting',
+                        name: 'setting',
+                        component: () => import('@/views/consultingroom/views/setting'),
+                        meta: {
+                            title: '诊所设置'
+                        },
+                    }
+                ]
             },
 
         ]

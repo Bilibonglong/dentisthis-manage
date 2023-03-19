@@ -14,9 +14,9 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .system {
-  // height: 100%;
+  height: 100%;
   width: 100%;
 }
 </style>

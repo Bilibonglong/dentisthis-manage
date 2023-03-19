@@ -34,7 +34,6 @@ export default {
       },
     };
   },
-
   methods: {
     ///mapMutations是vuex的mutation的辅助函数，用于在组件中映射mutation内的方法，以便在该组件中直接使用mutation里的方法
     ...mapMutations({
@@ -47,15 +46,15 @@ export default {
         .login(this.loginform.userid, this.loginform.password)
         .then((res) => {
           console.log(res);
-          const { response, success, msg } = res.data;
+          const { returnData, success, msg } = res.data;
           if (success) {
             try {
-              this.setTokenInfo(response);
-              this.setUserInfo(response.userInfo);
-              if(this.$route.query.redirecUtl)
-              {
-                
-              }
+              this.setTokenInfo(returnData);
+              this.setUserInfo(returnData.userInfo);
+              //if(this.$route.query.redirecUtl)
+              //{
+                this.$router.replace('home'); 
+              //}
             } catch (err) {
               console.log(err);
             }

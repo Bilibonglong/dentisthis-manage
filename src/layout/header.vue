@@ -1,101 +1,94 @@
 <template>
-  <div class="header-container">
-    <div class="l-content">
-      <el-button icon="el-icon-menu" size="small" @click="handleMenu">
-      </el-button>
-      <!-- 面包屑 -->
-      <span class="text">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item
-            v-for="item in tags"
-            :key="item.path"
-            :to="{ path: item.path }"
-            >{{ item.label }}</el-breadcrumb-item
-          >
-        </el-breadcrumb>
-      </span>
-    </div>
-
-    <div class="r-content">
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          <el-avatar
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-          ></el-avatar>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>退出登录</el-dropdown-item>
-          <el-dropdown-item>修改密码</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+  <div class=" header">
+    <!-- 基本信息区 -->
+    <div class="header_info">
+      <div class="title">
+        <p>口腔诊所管理系统</p>
+      </div>
+      <div class="l-content">
+        <el-button @click="handleMenu" plain icon="el-icon-menu" size="mini"></el-button>
+      </div>
+      <div class="user">
+        <!-- <el-avatar :size="40" shape="circle"></el-avatar> -->
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>退出登录</el-dropdown-item>
+            <el-dropdown-item>修改密码</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-import { mapState } from "vuex";
-
-export default {
-  data() {
-    return {};
-  },
-
-  methods: {
-    handleMenu() {
-      this.$store.commit("collapseMenu");
-    },
-  },
-  computed: {
-    ...mapState({
-      tags: (state) => state.tab.tabsList,
-    }),
-  },
-
-  mounted() {
-    console.log(this.tags, "tags");
-  },
-};
-</script>
-
 <style lang="less" scoped>
-.header-container {
-  padding: 0 20px;
-  background-color: #333;
+.header {
   height: 60px;
+  width: 100%;
+  overflow: hidden;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.text {
-  color: white;
-  font-size: 14px;
-  margin-left: 20px;
-}
-.r-contetn {
-  .user {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-}
-.l-content {
-  display: flex;
-  align-items: center;
-  .el-button {
-    margin-right: 20px;
-  }
-}
-/deep/ .el-breadcrumb_item {
-  .el-breadcrumb_inner {
-    font-weight: normal;
-    &.is-link {
-      color: #666;
+  flex-direction: column;
+
+  .header_info {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+
+    .title {
+      flex-grow: 30;
+
+      p {
+        margin-top: 22px;
+        font-size: 22px;
+        color: rgb(194, 189, 189);
+        width: 220px;
+      }
     }
-  }
-  &:last-child {
-    .el-breadcrumb_inner {
-      color: white;
+
+    .l-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+
+      .el-button {
+        margin-left: 5px;
+      }
+    }
+
+    .user {
+      // flex-grow: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      grid-gap: 13px;
+      padding-right: 5px;
     }
   }
 }
 </style>
+
+
+<script>
+export default {
+  data() {
+    return {
+    }
+  },
+  methods: {
+    handleMenu() {
+      this.$store.commit('collapseMenu')
+    }
+  },
+  computed: {
+    //退出登入、跳转登入页
+    exitLogin() {
+      this.$router.push({ name: 'login' });
+    },
+  }
+}
+</script>

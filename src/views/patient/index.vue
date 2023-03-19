@@ -17,33 +17,32 @@
       </div>
     </div>
 
-    <el-tabs v-model="activeName" @tab-click="handleClick" >
-      <el-tab-pane label="全部患者">
+
         <el-table :data="tableData" border style="width: 100%" :height="500">
           <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column prop="date" label="患者姓名" width="150">
+          <el-table-column prop="date" label="患者姓名" >
           </el-table-column>
-          <el-table-column prop="name" label="病历号" width="120">
+          <el-table-column prop="name" label="病历号" >
           </el-table-column>
-          <el-table-column prop="province" label="手机号" width="120">
+          <el-table-column prop="province" label="手机号">
           </el-table-column>
-          <el-table-column prop="city" label="年龄" width="120">
+          <el-table-column prop="city" label="年龄" >
           </el-table-column>
-          <el-table-column prop="address" label="性别" width="80">
+          <el-table-column prop="address" label="性别" >
           </el-table-column>
-          <el-table-column prop="zip" label="患者标签" width="120">
+          <el-table-column prop="zip" label="患者标签" >
           </el-table-column>
-          <el-table-column prop="zip" label="初诊医生" width="120">
+          <el-table-column prop="zip" label="初诊医生" >
           </el-table-column>
-          <el-table-column prop="zip" label="复诊医生" width="120">
+          <el-table-column prop="zip" label="复诊医生" >
           </el-table-column>
-          <el-table-column prop="zip" label="复诊日期" width="140">
+          <el-table-column prop="zip" label="复诊日期" >
           </el-table-column>
-          <el-table-column prop="zip" label="创建日期" width="140">
+          <el-table-column prop="zip" label="创建日期" >
           </el-table-column>
-          <el-table-column prop="zip" label="患者来源" width="140">
+          <el-table-column prop="zip" label="患者来源" >
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="140">
+          <el-table-column fixed="right" label="操作" >
             <template slot-scope="scope">
               <el-button
                 @click="handleClick(scope.row)"
@@ -69,10 +68,7 @@
       >
       </el-pagination>
     </div>
-      </el-tab-pane>
-      <el-tab-pane label="今日患者">今日患者</el-tab-pane>
-    </el-tabs>
-    <RouterView></RouterView>
+    <!-- <RouterView></RouterView> -->
 
     <el-dialog title="患者" center :visible.sync="dialogObject.addVisible" :close-on-click-modal="false" width="50%">
       <el-form :model="patientForm" :rules="rules" ref="userForm" label-width="80px">
@@ -157,8 +153,8 @@ export default {
 
 <style lang="less">
 .patientInfo_container {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
   .editbar {
     width: 100%;
     margin: 5px 0px;

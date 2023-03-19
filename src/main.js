@@ -7,16 +7,18 @@ import router from './routes';
 import apis from './apis/index';
 import '@/assets/icon/iconfont.css'
 
+Vue.config.productionTip = false
 Vue.use(ElementUI);
 
 
 Object.defineProperty(Vue.prototype, '$api', {
   value: apis,
 });
-Vue.config.productionTip = false
+
 
 new Vue({
   render: h => h(App),
+  store,
   router,
-  store
+
 }).$mount('#app') //
