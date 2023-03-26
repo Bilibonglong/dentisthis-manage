@@ -16,4 +16,24 @@ export default {
             ...userForm
         });
     },
+
+    DeleteUser(userId)
+    {
+        return ajax.post('/api/User/DeleteUser',{userId});
+    },
+
+    UpdateUserState(updateState)
+    {
+        return ajax.post('/api/User/UpdateUserState',{updateState})
+    },
+
+    updateUser(param)
+    {
+        return ajax.post('/api/User/UpdateUserInfo',{...param})
+    },
+
+    GetUserByRole()
+    {
+        return ajax.post('/api/User/GetUserByRole')
+    }
 };

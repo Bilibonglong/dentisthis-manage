@@ -60,7 +60,7 @@ const routes = [{
                     isAuth: true
                 }
             },
-            //预约
+            //诊所管理
             {
                 path: '/consultingroom',
                 name: 'consultingroom',
@@ -95,7 +95,41 @@ const routes = [{
                     }
                 ]
             },
-
+            //系统设置
+            {
+                path: '/system',
+                name: 'system',
+                component: () => import('@/views/system'),
+                meta: {
+                    title: '系统设置',
+                    isAuth: true
+                },
+                children: [{
+                        path: 'healItem',
+                        name: 'healItem',
+                        component: () => import('@/views/system/views/healItem'),
+                        meta: {
+                            title: '医疗项目'
+                        },
+                    },
+                    {
+                        path: 'role',
+                        name: 'role',
+                        component: () => import('@/views/consultingroom/views/role'),
+                        meta: {
+                            title: '角色管理'
+                        },
+                    },
+                    {
+                        path: 'setting',
+                        name: 'setting',
+                        component: () => import('@/views/consultingroom/views/setting'),
+                        meta: {
+                            title: '诊所设置'
+                        },
+                    }
+                ]
+            },
         ]
     }
 ]

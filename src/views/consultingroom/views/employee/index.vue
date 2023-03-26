@@ -3,9 +3,11 @@
         <!-- 操作 -->
         <div class="editbar">
             <div class="edit_btn">
-                <el-button plain type="success" size="mini" class="el-icon-plus"
+                <el-button plain type="primary " size="mini" class="el-icon-plus"
                     @click="openAddEmployeeDialog()">新增员工</el-button>
-                <el-button plain type="warning" size="mini" class="el-icon-close" @click="deleteEmployee()">停用</el-button>
+                <!-- <el-button plain type="danger" size="mini" class="el-icon-close" @click="UpdateUserState(true)">停用</el-button>
+                <el-button plain type="warning" size="mini" class="el-icon-close" @click="UpdateUserState(true)">启用</el-button> -->
+
             </div>
             <div class="edit_query">
                 <el-input v-model="queryForm.conditions" size="mini" label-width="60px" placeholder="输入姓名/手机号码"></el-input>
@@ -16,13 +18,13 @@
 
         <!-- 表格 -->
         <el-table :data="table.userList" :header-cell-style="{ 'text-align': 'center' }" @selection-change="selectRows"
-            border style="width: 100%">
+            border style="width: 100%" height=450>
             <el-table-column type="selection" width="40" align="center"> </el-table-column>
             <!-- 操作 -->
             <el-table-column fixed="left" label="操作" width="160" align="center">
                 <template slot-scope="scope">
                     <el-button type="text" size="mini" @click="updateDiolog(scope.row)">编辑</el-button>
-                    <el-button type="text" size="mini" @click="updateDiolog(scope.row)">删除</el-button>
+                    <el-button type="text" size="mini" @click="deleteEmployee(scope.row)">删除</el-button>
                     <el-button type="text" size="mini" @click="updateDiolog(scope.row)">密码</el-button>
                 </template>
             </el-table-column>
@@ -30,7 +32,7 @@
             <el-table-column prop="userId" fixed label="工号" align="center"> </el-table-column>
             <el-table-column prop="sex" label="性别" align="center">
                 <template slot-scope="scope">
-                    {{ scope.row.sex == 1 ? '男' : '女' }}
+                    {{ scope.row.sex == 0 ? '男' : '女' }}
                 </template>
             </el-table-column>
             <el-table-column prop="phoneNumber" label="用户电话" align="center"></el-table-column>
@@ -39,13 +41,12 @@
             <el-table-column prop="roleStr" label="职位" align="center"></el-table-column>
             <el-table-column label="在职状态" align="center">
                 <template slot-scope="scope">
-                    {{ scope.row.state === 1 ? '在职' : '停职' }}
+                    {{ scope.row.state === 0 ? '在职' : '停职' }}
                 </template>
             </el-table-column>
 
             <el-table-column prop="practiceLicenseType" label="执业许可证类型" align="center"></el-table-column>
             <el-table-column prop="practiceLicense" label="执业许可证号码" align="center"></el-table-column>
-
             <el-table-column prop="PracticeCredentials" label="执业资格证号码" align="center"></el-table-column>
 
         </el-table>
@@ -64,7 +65,7 @@
                     <el-input v-model="userForm.userId"></el-input>
                 </el-form-item>
                 <el-form-item label="姓名" prop="name">
-                    <el-input v-model="userForm.name"></el-input>
+                    <el-input v-model="userForm.userName"></el-input>
                 </el-form-item>
                 <el-form-item label="登录密码" prop="password">
                     <el-input v-model="userForm.password"></el-input>
@@ -91,7 +92,7 @@
                 <el-form-item label="职位" prop="role">
                     <template>
                         <el-select v-model="userForm.roles" multiple placeholder="请选择">
-                            <el-option v-for="item in Roleoptions" :label="item.label" :value="item.value"></el-option>
+                            <el-option v-for="item in Roleoptions" :label="item.label" :value="item.label" :key="item.label"></el-option>
                         </el-select>
                     </template>
                 </el-form-item>
@@ -100,7 +101,7 @@
                     <el-radio-group v-model="userForm.state" size="mini">
                         <el-radio :label="0">在职</el-radio>
                         <el-radio :label="1">停职</el-radio>
-                        <el-radio :label="2">停职</el-radio>
+                        <el-radio :label="2">离职</el-radio>
                     </el-radio-group>
                 </el-form-item>
             </el-form>
@@ -113,50 +114,56 @@
 
         <!-- 编辑员工信息弹窗框 -->
         <el-dialog title="编辑员工信息" center :visible.sync="dialogObject.updateVisible" :close-on-click-modal="false"
-            width="30%">
+            width="40%">
             <el-form :model="userForm" ref="userForm" label-width="80px" :rules="rules">
-                <el-form-item label="用户编号" prop="userId">
-                    <el-input v-model="userForm.userId" disabled></el-input>
+                <el-form-item label="员工号" prop="userId">
+                    <el-input v-model="userForm.userId"></el-input>
                 </el-form-item>
-                <el-form-item label="用户名称" prop="name">
-                    <el-input v-model="userForm.name"></el-input>
+                <el-form-item label="姓名" prop="userName">
+                    <el-input v-model="userForm.userName"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号码" prop="phoneNumber">
+                    <el-input type="text" v-model="userForm.phoneNumber"></el-input>
                 </el-form-item>
                 <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="userForm.sex" size="mini" prop="name">
-                        <el-radio :label="1">男</el-radio>
-                        <el-radio :label="2">女</el-radio>
+                    <el-radio-group v-model="userForm.sex" size="mini">
+                        <el-radio :label="0">男</el-radio>
+                        <el-radio :label="1">女</el-radio>
                     </el-radio-group>
+                </el-form-item>
+                <el-form-item label="证件号码" prop="idNumber">
+                    <el-input v-model="userForm.idNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="省区">
+                    <el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleChange">
+                    </el-cascader>
                 </el-form-item>
                 <el-form-item label="用户住址" prop="address">
                     <el-input type="text" v-model="userForm.address"></el-input>
                 </el-form-item>
-                <el-form-item label="职位" prop="position">
-                    <el-input type="text" v-model="userForm.position"></el-input>
+                <el-form-item label="职位" prop="role">
+                    <template>
+                        <el-select v-model="userForm.roles" multiple placeholder="请选择" @change="$forceUpdate()">
+                            <el-option v-for="item in Roleoptions" :label="item.label" :value="item.value" :key="item.label"></el-option>
+                        </el-select>
+                    </template>
                 </el-form-item>
-                <el-form-item label="部门" prop="departmentId">
-                    <el-select v-model="userForm.departmentId" filterable placeholder="请选择部门">
-                        <el-option v-for="item in DepartmentList" :key="item.departmentId" :label="item.departmentName"
-                            :value="item.departmentId"></el-option>
-                    </el-select>
-                </el-form-item>
-                <!-- <el-form-item label="部门"  prop="departmentId">
-            <el-checkbox-group v-model="userForm.departmentIds">
-              <el-checkbox v-for="item in DepartmentList" :label="item.departmentName" :key="item.departmentId">
-                {{ item.departmentName }}
-              </el-checkbox>
-            </el-checkbox-group>
-          </el-form-item> -->
 
-                <el-form-item label="联系方式" prop="phone">
-                    <el-input type="text" v-model="userForm.phone"></el-input>
+                <el-form-item label="在职状态" prop="state">
+                    <el-radio-group v-model="userForm.state" size="mini">
+                        <el-radio :label="0">在职</el-radio>
+                        <el-radio :label="1">停职</el-radio>
+                        <el-radio :label="2">离职</el-radio>
+                    </el-radio-group>
                 </el-form-item>
             </el-form>
 
             <div slot="footer" class="dialog-footer">
-                <el-button type="success" @click="updateUser()">修 改</el-button>
+                <el-button type="success" @click="updateEmployee()">修 改</el-button>
                 <el-button @click="resetForm('userForm')">取 消</el-button>
             </div>
         </el-dialog>
+
     </div>
 </template>
   
@@ -193,7 +200,7 @@ export default {
                 ],
                 password: [{ required: true, message: '密码', trigger: ["blur", 'change'] }],
                 roles: [{ required: true, message: '职位不能为空', trigger: 'blur' }],
-                name: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
+                userName: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
                 address: [{ required: true, message: '用户住址不能为空', trigger: 'blur' }],
                 sex: [{ required: true, message: '用户性别不能为空', trigger: 'blur' }],
             },
@@ -205,7 +212,7 @@ export default {
             userForm: {
                 //存取添加或者修改的用户的数据
                 userId: '',
-                name: '',
+                userName: '',
                 sex: 0,
                 roles: [],
                 state: 0,
@@ -214,8 +221,7 @@ export default {
                 idNumber: '',
             },
 
-            DepartmentList: [], //存储部门信息
-            userIds: [], //获取用户选中需要删除的数据
+            userStates: [],
 
             table: {
                 userList: [], //后台返回的用户表数据
@@ -223,8 +229,8 @@ export default {
             },
 
             dialogObject: {
-                addVisible: false, //添加用户模态框默认为关闭
-                updateVisible: false, //修改用户模态框默认为关闭
+                addVisible: false,
+                updateVisible: false,
             },
 
             Roleoptions: [{
@@ -240,23 +246,34 @@ export default {
                 value: 'Reception',
                 label: '前台'
             }],
+
+            // Roleoptions: [{
+            //     label: '管理员'
+            // }, {
+            //     label: '医生'
+            // }, {
+            //     label: '收银员'
+            // }, {
+            //     label: '前台'
+            // }],
+
         };
     },
     methods: {
         loadData() {
             this.GetUserList();
-            this.GetDepartmentList()
         },
         //获取用户数据
         async GetUserList() {
 
             await this.$api.employee.GetEmployeeList(this.queryForm.page, this.queryForm.row, this.queryForm.conditions).then((res) => {
                 const { returnData, success, message } = res.data;
+                console.log(res.data);
                 if (!success) {
                     return;
                 }
                 this.table.userList = returnData;
-                this.table.total = res.count;
+                this.table.total = res.data.count;
             });
         },
 
@@ -270,29 +287,40 @@ export default {
 
         //打开修改用户弹窗
         updateDiolog(row) {
+            console.log(row);
+            // console.log(this.Roleoptions.filter(option => row.roleStr.split(",").includes(option.label)));
+            // let filteredOptions = Roleoptions.filter(option => option.label.startsWith('医生'));
+            this.userForm = { ...row }
             this.dialogObject.updateVisible = true;
-            this.userForm.userId = row.userId;
-            this.userForm.name = row.name;
-            this.userForm.sex = row.sex;
-            this.userForm.address = row.address;
-            this.userForm.phone = row.phone;
-            this.userForm.departmentId = row.departmentId;
-            this.userForm.position = row.position;
+            // this.userForm.userId = row.userId;
+            // this.userForm.userName = row.name;
+            // this.userForm.sex = row.sex;
+            // this.userForm.address = row.address;
+            // this.userForm.phone = row.phone;
+            // this.userForm.position = row.position;
+            this.userForm.roles = row.roleStr.split(",")//this.Roleoptions.filter(option=>row.roleStr.split(",").includes(option.label));
+
+
+
+            console.log(this.userForm);
         },
         //修改用户数据
-        updateUser() {
+        updateEmployee() {
             this.$refs['userForm'].validate((valid) => {
                 if (valid) {
                     const user = {
                         userId: this.userForm.userId,
-                        name: this.userForm.name,
+                        userName: this.userForm.userName,
+                        password: this.userForm.password,
                         sex: this.userForm.sex,
-                        address: this.userForm.address,
-                        phone: this.userForm.phone,
-                        departmentId: this.userForm.departmentId,
-                        position: this.userForm.position,
+                        roles: this.userForm.roles,
+                        state: this.userForm.state,
+                        phoneNumber: this.userForm.phoneNumber,
+                        address: this.userForm.areadata + this.userForm.address,
                     };
-                    this.$api.user.updateUser(user).then((res) => {
+
+                    console.log(user);
+                    this.$api.employee.updateUser(user).then((res) => {
                         const { data, success, message } = res.data;
                         console.log(data);
                         if (!success) {
@@ -313,21 +341,22 @@ export default {
         openAddEmployeeDialog() {
             this.dialogObject.addVisible = true;
             this.userForm.userId = '';
-            this.userForm.name = '';
+            this.userForm.userName = '';
             this.userForm.sex = '';
             this.userForm.address = '';
-            this.userForm.phone = '';
-            this.userForm.departmentId = '';
+            this.userForm.phoneNumber = '';
             this.userForm.position = '';
+            this.userForm.roles = []
         },
         //添加用户数据
         addEmployee() {
             this.$refs['userForm'].validate((valid) => {
                 if (valid) {
+                    
                     console.log(this.userForm.areadata);
                     const user = {
                         userId: this.userForm.userId,
-                        userName: this.userForm.name,
+                        userName: this.userForm.userName,
                         password: this.userForm.password,
                         sex: this.userForm.sex,
                         roles: this.userForm.roles,
@@ -355,30 +384,27 @@ export default {
 
         //获取选中行的数据
         selectRows(selection) {
-            this.userIds = [];
+            this.userStates = [];
             selection.forEach((element) => {
-                this.userIds.push(element.userId);
+                this.userStates.push({ userId: element.userId, state: element.state });
             });
-            console.log(this.userIds);
         },
         //删除用户
-        deleteEmployee() {
-            if (this.userIds.length == 0) {
-                this.$message({
-                    message: '请选择要删除的数据',
-                    type: 'warning',
-                });
-            } else {
-                this.$api.user.deleteEmployeeById(this.userIds).then((res) => {
-                    let { success, message } = res.data;
-                    if (!success) {
-                        this.$message.error('删除失败！');
-                    } else {
-                        this.$message({ message: '删除成功！', type: 'success' });
-                        this.loadData();
-                    }
-                });
-            }
+        deleteEmployee(row) {
+            this.$api.employee.DeleteUser(row.userId).then((res) => {
+                let { success, message } = res.data;
+                if (!success) {
+                    this.$message.error('删除失败！');
+                } else {
+                    this.$message({ message: '删除成功！', type: 'success' });
+                    this.loadData();
+                }
+            });
+
+        },
+
+        UpdateUserState(opStateType) {
+            console.log(opStateType);
         },
 
         //重置搜索条件
@@ -399,39 +425,39 @@ export default {
             this.loadData();
         },
 
-            //地址框选择触发
-    handleChange(value) {
-        this.search.province = '';
-        this.search.city = '';
-        this.search.district = '';
-        for (var k = 0, lengthk = provinceAndCity.length; k < lengthk; k++) {
-            //确定省
-            if (provinceAndCity[k].code == value[0]) {
-                this.search.province = provinceAndCity[k].name;
-                if (provinceAndCity[k].cityList && value.length >= 2 && value[1] != '') {
-                    for (var i = 0, lengthi = provinceAndCity[k].cityList.length; i < lengthi; i++) {
-                        //确定市
-                        if (provinceAndCity[k].cityList[i].code == value[1] || provinceAndCity[k].cityList.length == 1) {
-                            this.search.city = provinceAndCity[k].cityList[i].name;
-                            //确定区
-                            if (provinceAndCity[k].cityList[i].areaList && value.length == 3 && value[2] != '') {
-                                for (var j = 0, lengthj = provinceAndCity[k].cityList[i].areaList.length; j < lengthj; j++) {
-                                    if (provinceAndCity[k].cityList[i].areaList[j].code == value[2]) {
-                                        this.search.district = provinceAndCity[k].cityList[i].areaList[j].name;
-                                        break;
+        //地址框选择触发
+        handleChange(value) {
+            this.search.province = '';
+            this.search.city = '';
+            this.search.district = '';
+            for (var k = 0, lengthk = provinceAndCity.length; k < lengthk; k++) {
+                //确定省
+                if (provinceAndCity[k].code == value[0]) {
+                    this.search.province = provinceAndCity[k].name;
+                    if (provinceAndCity[k].cityList && value.length >= 2 && value[1] != '') {
+                        for (var i = 0, lengthi = provinceAndCity[k].cityList.length; i < lengthi; i++) {
+                            //确定市
+                            if (provinceAndCity[k].cityList[i].code == value[1] || provinceAndCity[k].cityList.length == 1) {
+                                this.search.city = provinceAndCity[k].cityList[i].name;
+                                //确定区
+                                if (provinceAndCity[k].cityList[i].areaList && value.length == 3 && value[2] != '') {
+                                    for (var j = 0, lengthj = provinceAndCity[k].cityList[i].areaList.length; j < lengthj; j++) {
+                                        if (provinceAndCity[k].cityList[i].areaList[j].code == value[2]) {
+                                            this.search.district = provinceAndCity[k].cityList[i].areaList[j].name;
+                                            break;
+                                        }
                                     }
                                 }
+                                break;
                             }
-                            break;
                         }
                     }
+                    break;
                 }
-                break;
             }
-        }
-        this.userForm.areadata = '';
-        this.userForm.areadata = this.search.province + this.search.city + this.search.district;
-    },
+            this.userForm.areadata = '';
+            this.userForm.areadata = this.search.province + this.search.city + this.search.district;
+        },
     },
 
     created() {
