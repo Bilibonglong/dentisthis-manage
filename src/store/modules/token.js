@@ -1,24 +1,21 @@
-export default{
-    namespaced:true,
+export default {
+    namespaced: true,
     //存放token状态
-    state:{
-        tokenInfo:{
-            accessToken:"",
-            expiresTime:0,
+    state: {
+        tokenInfo: {
+            accessToken: "",
+            expiresTime: 0,
         }
     },
-    //
-    getters:{
-        accessToken(state){
-            if(state.tokenInfo)
-            {
+    getters: {
+        accessToken(state) {
+            if (state.tokenInfo==null) {
                 return null;
             }
             return state.tokenInfo.accessToken;
         },
-        expiresTime(state){
-            if(state.tokenInfo==null)
-            {
+        expiresTime(state) {
+            if (state.tokenInfo == null) {
                 return null;
             }
             return state.tokenInfo.expiresTime;
@@ -26,15 +23,13 @@ export default{
     },
 
     //操作state成员
-    mutations:{
-        setTokenInfo(state,tokenInfo)
-        {
-            state.tokenInfo['accessToken']=tokenInfo['accessToken'];
-            state.tokenInfo['expiresTime']=new Date().getTime()+tokenInfo['expiresTime'];
+    mutations: {
+        setTokenInfo(state, tokenInfo) {
+            state.tokenInfo['accessToken'] = tokenInfo['accessToken'];
+            state.tokenInfo['expiresTime'] = new Date().getTime() + tokenInfo['expiresTime'];
         },
 
-        clearToken(state)
-        {
+        clearToken(state) {
             localStorage.removeItem("tokenData");
         },
     },

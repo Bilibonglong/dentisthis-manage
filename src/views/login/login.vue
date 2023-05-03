@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>牙医后台管理系统</span>
       </div>
-      <el-form label-width="80px" :model="loginform" ref="form" :rules="rules">
+      <el-form label-width="80px" :model="loginform" ref="form" >
         <el-form-item label="用户名" prop="username">
           <el-input v-model="loginform.userid"></el-input>
         </el-form-item>
@@ -21,7 +21,7 @@
 <script>
 import { mapMutations } from "vuex";
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       loginform: {
@@ -29,7 +29,7 @@ export default {
         password: "",
       },
       rules: {
-        username: [{ required: false, message: "请输入用户名", trigger: "blur" }],
+        userid: [{ required: false, message: "请输入用户名", trigger: "blur" }],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
     };

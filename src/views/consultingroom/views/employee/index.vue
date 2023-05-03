@@ -45,9 +45,9 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="practiceLicenseType" label="执业许可证类型" align="center"></el-table-column>
-            <el-table-column prop="practiceLicense" label="执业许可证号码" align="center"></el-table-column>
-            <el-table-column prop="PracticeCredentials" label="执业资格证号码" align="center"></el-table-column>
+            <el-table-column prop="practiceLicenseTypeStr" label="执业许可证类型" align="center"></el-table-column>
+            <!-- <el-table-column prop="practiceLicense" label="执业许可证号码" align="center"></el-table-column>
+            <el-table-column prop="PracticeCredentials" label="执业资格证号码" align="center"></el-table-column> -->
 
         </el-table>
         <!-- 分页 -->

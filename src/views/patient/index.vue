@@ -9,11 +9,9 @@
           <div class="edit_btn">
             <el-button type="success" size="mini" class="el-icon-circle-plus-outline"
               @click="openAddDialog()">新增患者</el-button>
-            <!-- <el-button type="primary" size="mini" >引入销售单</el-button>
-        <el-button type="warning" size="mini" > 提交 </el-button> -->
           </div>
           <div class="edit_query">
-            <el-date-picker align="right" type="date" placeholder="选择日期" :picker-options="pickerOptions">
+            <el-date-picker align="right" type="date" placeholder="选择日期" :picker-options="pickerOptions" size="mini">
             </el-date-picker>
             <el-input size="mini" label-width="80px" placeholder="姓名/手机号/病历号"></el-input>
             <el-button type="primary" @click="getPurchasePlanList()" size="mini">查找</el-button>
@@ -38,12 +36,6 @@
               {{ scope.row.sex == 1 ? "男" : "女" }}
             </template>
           </el-table-column>
-          <!-- <el-table-column prop="zip" label="患者标签"> -->
-          <!-- </el-table-column> -->
-          <el-table-column prop="zip" label="初诊医生">
-          </el-table-column>
-          <el-table-column prop="zip" label="复诊医生">
-          </el-table-column>
           <el-table-column prop="lastvisitdate" label="创建日期">
           </el-table-column>
           <el-table-column prop="createdate" label="复诊日期">
@@ -55,7 +47,7 @@
             <template slot-scope="scope">
               <el-button @click="handleClick(scope.row)" type="text" size="small">预约</el-button>
               <el-button type="text" size="small" @click="PatientRegistration(scope.row)">挂号</el-button>
-              <el-button @click="handleClick(scope.row)" type="text" size="small">查看病历</el-button>
+              <el-button @click="CheckPatienHistory(scope.row)" type="text" size="small">查看病历</el-button>
 
             </template>
           </el-table-column>
@@ -147,6 +139,38 @@
             <el-button @click="dialogObject.patientRegistration = false">取 消</el-button>
           </div>
         </el-dialog>
+
+        <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false" size="60%">
+          <el-container>
+            <el-header>{{ this.patientHistory.patientName + "的历史病历" }}</el-header>
+            <el-main>
+              <el-card class="box-card" v-for="(item) in patientHistory" :key="item.patienVisitId" shadow="hover">
+                <div slot="header" class="clearfix">
+                  <span>问诊日期：{{ item.visitDate }}</span>
+                  <span>就诊医师：{{ item.doctorName }}</span>
+                  <span>病症：{{ item.symptom }}</span>
+                </div>
+                <div>
+                  <el-descriptions>
+                    <el-descriptions-item label="患者主诉">{{ item.chiefComplaint }}</el-descriptions-item>
+                    <el-descriptions-item label="医生医嘱">{{ item.diagnosis }}</el-descriptions-item>
+                  </el-descriptions>
+                  <el-table :header-cell-style="{ 'text-align': 'center' }" border="" :data="item.disposals"
+                     ref="DisposalDetail" show-summary>
+                    <el-table-column prop="itemName" label="项目名称" align="center"> </el-table-column>
+                    <el-table-column prop="itemType" label="类别" align="center"> </el-table-column>
+                    <el-table-column prop="unit" label="单位" align="center"> </el-table-column>
+                    <el-table-column prop="count" label="数量" align="center"> </el-table-column>
+                    <el-table-column prop="price" label="项目价格" align="center"> </el-table-column>
+                  </el-table>
+                </div>
+              </el-card>
+            </el-main>
+            <el-footer>Footer</el-footer>
+          </el-container>
+
+        </el-drawer>
+
       </el-tab-pane>
       <el-tab-pane label="今日患者">
         <div class="content">
@@ -172,6 +196,10 @@
           </div>
         </div>
       </el-tab-pane>
+      <el-tab-pane label="我的工作台">
+        <div class="content">
+        </div>
+      </el-tab-pane>
     </el-tabs>
 
   </div>
@@ -183,6 +211,7 @@ import provinceAndCity from '@/assets/js/province';
 export default {
   data() {
     return {
+      drawer: false,
       isChecked: false,
       title: 'Card Title',
       content: 'This is the card content.',
@@ -190,17 +219,18 @@ export default {
       options: regionDataPlus,
       provinceAndCity,
       search: { current: 1, size: 6 },
-      patientSourceType: [{ label: "网络咨询", value: 1 }, { label: "朋友介绍", value: 2 }, { label: "家住附近", value: 3 }],
-      queryForm: {
+       queryForm: {
         page: 1,
         row: 10,
         patientname: '',
         phoneNumber: '',
       },
+      patientHistory: [],
       currentRow: null,
       table: {
         userList: [],
         patienList: [],
+        disposals:[],
         total: 0,
       },
       dialogObject: {
@@ -271,7 +301,6 @@ export default {
         PhoneNumber: this.queryForm.phoneNumber,
         Patientname: this.queryForm.patientname
       }
-      console.log(patientForm);
       await this.$api.patient.GetPatienInfo(patientForm).then((res) => {
         const { returnData, success, message } = res.data;
         console.log(res.data);
@@ -281,20 +310,28 @@ export default {
 
         this.table.patienList = returnData;
         this.table.total = res.data.count;
+      });
+    },
 
-        console.log(this.table);
+    //获取诊断清单详情
+    async GetDisposalDetailInfo(patienVisitId) {
+      await this.$api.patient.GetDisposalDetailInfo(patienVisitId).then((res) => {
+        const { returnData, success, message } = res.data;
+        if (!success) {
+          return;
+        }
+        this.table.DisposalDetail = returnData;
+        this.Remittance.TotalPrice = returnData.reduce((acc, obj) => acc + obj.price, 0);
       });
     },
     //获取是医生的员工信息
     async GetUserByRole() {
-
       await this.$api.employee.GetUserByRole().then((res) => {
         const { returnData, success, message } = res.data;
         console.log(res.data);
         if (!success) {
           return;
         }
-
         this.table.userList = returnData;
       });
     },
@@ -313,15 +350,26 @@ export default {
         this.$alert('已患者分诊，请医生到自己的工作台查看', '标题名称', {
           confirmButtonText: '确定',
           callback: action => {
-            // this.$message({
-            //   type: 'info',
-            //   message: `action: ${action}`
-            // });
           }
         });
 
       });
     },
+
+    //查看患者历史病历
+    CheckPatienHistory(row) {
+      this.$api.patient.GetPatientVisitCompletedList(row.patientid).then((res) => {
+        const { returnData, success, message } = res.data;
+        console.log(res.data);
+        if (!success) {
+          return;
+        }
+        this.patientHistory = returnData;
+        // this.table.disposals=returnData.disposals;
+      });
+      this.drawer = true;
+    },
+
     handleClick(row) {
       console.log(row);
     },
@@ -425,6 +473,11 @@ export default {
       grid-template-columns: 2fr 2fr 0.3fr 0.3fr;
       grid-column-gap: 5px;
     }
+
+
+    .clearfix span {
+      margin-left: 60px;
+    }
   }
 
   .editform {
@@ -449,6 +502,7 @@ export default {
     float: right;
   }
 
+
   .card-checkbox {
     position: absolute;
     top: 5px;
@@ -458,45 +512,13 @@ export default {
     cursor: pointer;
   }
 
-  // .hidden-checkbox {
-  //   display: none;
-  // }
+  :deep .box-card {
+    margin-top: 40px;
+  }
 
-  // .checkbox {
-  //   position: relative;
-  //   display: inline-block;
-  //   width: 16px;
-  //   height: 16px;
-  //   border: 1px solid #999;
-  //   border-radius: 3px;
-  //   margin-right: 6px;
-  //   vertical-align: middle;
-  //   transition: all 0.3s ease-in-out;
-  // }
-
-  // .checkmark {
-  //   position: absolute;
-  //   top: 2px;
-  //   left: 2px;
-  //   display: none;
-  //   width: 10px;
-  //   height: 10px;
-  //   background-color: #555;
-  //   border-radius: 2px;
-  //   transition: all 0.3s ease-in-out;
-  // }
-
-  // .checkbox:hover {
-  //   border-color: #666;
-  // }
-
-  // .checkbox:hover .checkmark {
-  //   display: block;
-  // }
-
-  // .hidden-checkbox:checked+.checkbox .checkmark {
-  //   display: block;
-  // }
+  :deep .clearfix>span {
+    margin-right: 60px;
+  }
 
 }
 </style>
