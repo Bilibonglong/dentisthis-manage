@@ -39,6 +39,7 @@ export default {
     ...mapMutations({
       setTokenInfo: "token/setTokenInfo",
       setUserInfo: "userInfo/setUserInfo",
+      // setRoles:"userInfo/setRoles"
     }),
     login() {
       //.then((data)=>{ })里的data是指接口成功返回的数据,包含请求头,请求体,等信息;
@@ -51,6 +52,7 @@ export default {
             try {
               this.setTokenInfo(returnData);
               this.setUserInfo(returnData.userInfo);
+              // this.setRoles(returnData.userInfo.roles)
               //if(this.$route.query.redirecUtl)
               //{
                 this.$router.replace('home'); 

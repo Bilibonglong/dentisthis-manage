@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+// import store from'@/store'
 
 Vue.use(VueRouter);
 // const VueRouterPush = VueRouter.prototype.push;
@@ -19,16 +19,6 @@ VueRouter.prototype.replace = function replace(to) {
 };
 
 //在单页面应用中，网页具体路径显示是由vue-router配置中 path决定的，path设置的是什么就显示什么，和name无关。
-
-export const defaultRouter = [{
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/login/login.vue'),
-    meta: {
-        title: '登录',
-    }
-}, ]
-
 export const asyncRoutes = [{
     path: '/index',
     name: 'index',
@@ -56,6 +46,7 @@ export const asyncRoutes = [{
             component: () => import('@/views/patient'),
             meta: {
                 title: '患者',
+                roles: ["Admin", "Doctor"]
             }
         },
 
@@ -66,6 +57,7 @@ export const asyncRoutes = [{
             component: () => import('@/views/subscribe'),
             meta: {
                 title: '预约',
+                roles: ["Admin", "Doctor"]
             }
         },
         //医生工作站
@@ -75,41 +67,26 @@ export const asyncRoutes = [{
             component: () => import('@/views/doctorWorkStation'),
             meta: {
                 title: '医生工作站',
+                roles: ["Admin", "Doctor"]
             }
         },
 
-        //库房
-        {
-            path: '/storehouse',
-            name: 'index',
-            component: () => import('@/views/storehouse'),
-            meta: {
-                title: '库房管理',
-                roles: ["Admin"]
-            },
-            children: [{
-                path: '/storehouseInfo',
-                name: 'storehouseInfo',
-                component: () => import('@/views/storehouse/views/storehouseInfo'),
-                meta: {
-                    title: '库房信息'
-                },
-            }]
-        },
+
         //诊所管理
         {
             path: '/consultingroom',
             name: 'consultingroom',
             component: () => import('@/views/consultingroom'),
             meta: {
-                title: '预约',
-                roles: ["Admin"]
+                title: '诊所管理',
+                roles: ["Admin", "Doctor"]
             },
             children: [{
                     path: '/employee',
                     name: 'employee',
                     component: () => import('@/views/consultingroom/views/employee'),
                     meta: {
+                        roles: ["Admin"],
                         title: '员工管理'
                     },
                 },
@@ -118,15 +95,8 @@ export const asyncRoutes = [{
                     name: 'role',
                     component: () => import('@/views/consultingroom/views/role'),
                     meta: {
+                        roles: ["Admin"],
                         title: '角色管理',
-                    },
-                },
-                {
-                    path: '/setting',
-                    name: 'setting',
-                    component: () => import('@/views/consultingroom/views/setting'),
-                    meta: {
-                        title: '诊所设置'
                     },
                 },
                 {
@@ -134,6 +104,7 @@ export const asyncRoutes = [{
                     name: 'finance',
                     component: () => import('@/views/consultingroom/views/finance'),
                     meta: {
+                        roles: ["Admin"],
                         title: '营收管理'
                     },
                 }
@@ -146,21 +117,16 @@ export const asyncRoutes = [{
             component: () => import('@/views/system'),
             meta: {
                 title: '系统设置',
+                roles: ["Admin"],
             },
             children: [{
                     path: '/healItem',
                     name: 'healItem',
                     component: () => import('@/views/system/views/healItem'),
                     meta: {
+                        roles: ["Admin"],
                         title: '医疗项目'
-                    },
-                },
-                {
-                    path: '/role',
-                    name: 'role',
-                    component: () => import('@/views/consultingroom/views/role'),
-                    meta: {
-                        title: '角色管理'
+
                     },
                 },
                 {
@@ -168,19 +134,60 @@ export const asyncRoutes = [{
                     name: 'setting',
                     component: () => import('@/views/consultingroom/views/setting'),
                     meta: {
-                        title: '诊所设置'
+                        roles: ["Admin"],
+                        title: '病例模板'
                     },
-                }
+                },
+                {
+                    path: '/healItem',
+                    name: 'healItem',
+                    component: () => import('@/views/system/views/healItem'),
+                    meta: {
+                        roles: ["Admin"],
+                        title: '药物设置'
+
+                    },
+                },
             ]
+        },
+        //库房
+        {
+            path: '/storehouse',
+            name: 'index',
+            component: () => import('@/views/storehouse'),
+            meta: {
+                title: '库房管理',
+                roles: ["Admin"],
+            },
+            children: [{
+                path: '/storehouseInfo',
+                name: 'storehouseInfo',
+                component: () => import('@/views/storehouse/views/storehouseInfo'),
+                meta: {
+                    title: '库房信息'
+                },
+            }]
         },
     ]
 }]
+
+export const defaultRouter = [{
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login/login.vue'),
+    meta: {
+        title: '登录',
+    }
+}, ...asyncRoutes]
+
 
 const router = new VueRouter({
     // mode: 'history',
     scrollBehavior: () => ({
         y: 0
     }),
-    routes: defaultRouter
+
+    routes: defaultRouter,
 })
+
 export default router
