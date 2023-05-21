@@ -10,7 +10,7 @@
                                 <div class="left"><i class="el-icon-user-solid" style="font-size: 50px;"></i></div>
                                 <div class="right">
                                     <div class="top" style="">接诊患者总人次</div>
-                                    <div class="bottom">52</div>
+                                    <div class="bottom">{{ this.data.patiTotal }}</div>
                                 </div>
                             </div>
                         </el-col>
@@ -19,7 +19,7 @@
                                 <div class="left"><i class="el-icon-message-solid" style="font-size: 50px;"></i></div>
                                 <div class="right">
                                     <div class="top" style="">今日已就诊</div>
-                                    <div class="bottom">2</div>
+                                    <div class="bottom">{{ this.data.todayVisitCount }}</div>
                                 </div>
                             </div>
                         </el-col>
@@ -28,7 +28,7 @@
                                 <div class="left"><i class="el-icon-user-solid" style="font-size: 50px;"></i></div>
                                 <div class="right">
                                     <div class="top" style="">今日已预约</div>
-                                    <div class="bottom">20</div>
+                                    <div class="bottom">{{ this.data.todayReservationCount }}</div>
                                 </div>
                             </div>
                         </el-col>
@@ -37,7 +37,7 @@
                                 <div class="left"><i class="el-icon-user-solid" style="font-size: 50px;"></i></div>
                                 <div class="right">
                                     <div class="top" style="">今日总收入</div>
-                                    <div class="bottom">20</div>
+                                    <div class="bottom">{{ this.data.todayIncome }}</div>
                                 </div>
                             </div>
                         </el-col>
@@ -46,34 +46,33 @@
                     <!-- 常用功能 -->
                     <div class="charts-line">
                         <div id="charts-line" class="left" style="height: 700px">
-                            <el-tabs tab-position="left" style="height: 200px;">
+                            <el-tabs tab-position="left" style="height: 7   00px;">
                                 <el-tab-pane label="诊所消息">
                                     <el-collapse accordion>
-                                        <el-collapse-item>
+                                        <el-collapse-item v-for="item in message.systemMessage" :key="item" :value="item"
+                                            :index="item">
                                             <template slot="title">
-                                                一致性 Consistency<i class="header-icon el-icon-info"></i>
+                                                <i class="el-icon-chat-dot-round">{{ item }}</i>
                                             </template>
-                                            <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
-                                            <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
-                                        </el-collapse-item>
-                                        <el-collapse-item title="反馈 Feedback">
-                                            <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                                            <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
                                         </el-collapse-item>
                                     </el-collapse>
                                 </el-tab-pane>
                                 <el-tab-pane label="库房警报">
-                                    <el-collapse accordion>
-                                        <el-collapse-item>
+                                    <el-collapse>
+                                        <el-collapse-item v-for="item in message.storeMessage" :key="item" :value="item"
+                                            :index="item">
                                             <template slot="title">
-                                                药品库存预警<i class="header-icon el-icon-info"></i>
+                                                <div>{{ item }}</div>
                                             </template>
-                                            <div>甲硝唑片 0.2g X 24库存低于警告库存10</div>
                                         </el-collapse-item>
                                     </el-collapse>
                                 </el-tab-pane>
-                                <el-tab-pane label="今日就诊">今日就诊</el-tab-pane>
-                                <el-tab-pane label="明日预约">明日预约</el-tab-pane>
+                                <el-tab-pane label="年度就诊记录">
+                                    <div id="visitTotalCountChart" style="width: 600px;height:1000px;">
+
+                                    </div>
+                                </el-tab-pane>
+                                <el-tab-pane label="年度营收记录">年度营收记录</el-tab-pane>
                             </el-tabs>
                         </div>
 
@@ -86,21 +85,21 @@
                                                 <i class="el-icon-mobile-phone"></i>
                                                 今日份我的就诊人次
                                             </template>
-                                            {{ 1 }}人
+                                            {{ this.task.myTodayVisit }}人
                                         </el-descriptions-item>
                                         <el-descriptions-item>
                                             <template slot="label">
                                                 <i class="el-icon-location-outline"></i>
                                                 今日份我的预约人次
                                             </template>
-                                            {{1 }}人
+                                            {{ this.task.myTodayReservation }}人
                                         </el-descriptions-item>
                                         <el-descriptions-item>
                                             <template slot="label">
                                                 <i class="el-icon-tickets"></i>
                                                 今日份个人营收诊金
                                             </template>
-                                            200￥
+                                            {{ this.task.myTodayIncome }}￥
                                         </el-descriptions-item>
                                     </el-descriptions>
                                 </el-tab-pane>
@@ -117,6 +116,9 @@
 export default {
     data() {
         return {
+            data: {},
+            task: {},
+            message: {},
             centerDialogVisible: false,
             input: '',
             announcement: [],
@@ -159,12 +161,81 @@ export default {
     },
     methods: {
         loadData() {
-            this.Getannouncement();
+            this.GetHomeData();
+            this.GetMyTask();
+            this.GetMessageInfo();
         },
+        async GetHomeData() {
+            await this.$api.home.GetHomeData().then((res) => {
+                const { returnData, success, message } = res.data;
+                if (!success) {
+                    console.log(message)
+                    return;
+                }
+                this.data = returnData;
+            });
+        },
+        async GetMyTask() {
+            await this.$api.home.GetMyTask().then((res) => {
+                const { returnData, success, message } = res.data;
+                if (!success) {
+                    console.log(message)
+                    return;
+                }
+                this.task = returnData;
+            });
+        },
+        async GetMessageInfo() {
+            await this.$api.home.GetMessageInfo().then((res) => {
+                const { returnData, success, message } = res.data;
+                if (!success) {
+                    console.log(message)
+                    return;
+                }
+                this.message = returnData;
+                this.InitEchartData();
+
+            });
+        },
+        InitEchartData() {
+            // 基于准备好的dom，初始化echarts实例
+            var visitTotalCountChart = this.$echarts.init(document.getElementById('visitTotalCountChart'))
+            var visitTotalCountChart = this.$echarts.init(document.getElementById('visitTotalCountChart'))
+            // 指定图表的配置项和数据
+            var visitTotalCountChartoption = {
+                title: {
+                    text: 'ECharts 入门示例'
+                },
+
+                tooltip: {},
+
+                legend: {
+                    data: ['销量']
+
+                },
+                xAxis: {
+                    data: this.message.visitTotalCount.map(item => item.date)
+                },
+                yAxis: {},
+                series: [
+                    {
+                        name: '就诊数',
+                        type: 'bar',
+                        data: this.message.visitTotalCount.map(item => item.visitCount)
+                    }
+                ]
+            }
+            // 使用刚指定的配置项和数据显示图表。
+            visitTotalCountChart.setOption(visitTotalCountChartoption)
+        }
     },
     created() {
+        this.loadData();
 
     },
+    mounted() {
+
+    }
 };
 </script>
 <style lang="less" scoped>
