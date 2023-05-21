@@ -130,18 +130,9 @@ export const asyncRoutes = [{
                     },
                 },
                 {
-                    path: '/setting',
-                    name: 'setting',
-                    component: () => import('@/views/consultingroom/views/setting'),
-                    meta: {
-                        roles: ["Admin"],
-                        title: '病例模板'
-                    },
-                },
-                {
-                    path: '/healItem',
-                    name: 'healItem',
-                    component: () => import('@/views/system/views/healItem'),
+                    path: '/medicine',
+                    name: 'medicine',
+                    component: () => import('@/views/system/views/medicine'),
                     meta: {
                         roles: ["Admin"],
                         title: '药物设置'

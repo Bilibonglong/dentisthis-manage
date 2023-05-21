@@ -4,7 +4,7 @@
 			active-text-color="#049eff" :collapse="isCollapse" >
 			<!-- 动态渲染组件 -->
 			<div  v-for="(item,index) in routerlist" :key="index">
-				<el-menu-item v-if="!item.children" :index="item.path" :to='item.name' >
+				<el-menu-item v-if="!item.children" :index="item.path" :to='item.name' @click.native="clickMenu({path:item.path,name:item.name,label:item.meta.title})">
 					<span>{{item.meta.title}}</span>
 				</el-menu-item>
 				<el-submenu v-if="item.children"  :index="item.path" >
@@ -12,7 +12,7 @@
 						<!-- <i class="el-icon-notebook-2"></i> -->
 						<span>{{item.meta.title}}</span>
 					</template>
-					<el-menu-item v-for="(itemlist,index) in item.children" :index="itemlist.path" :to='itemlist.name'>
+					<el-menu-item v-for="(itemlist,index) in item.children" :key="itemlist.path" :index="itemlist.path" :to='itemlist.name' @click.native="clickMenu({path:itemlist.path,name:itemlist.name,label:itemlist.meta.title})">
 						{{itemlist.meta.title}}
 					</el-menu-item>
 				</el-submenu>
@@ -71,6 +71,7 @@
 		},
 		methods: {
 			clickMenu(item) {
+				console.log(item);
 				this.$router.push({
 					name: item.name,
 				});

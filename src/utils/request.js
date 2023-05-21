@@ -28,7 +28,7 @@ const ajax = axios.create({
         //添加token
         const token = store.getters['token/accessToken'];
         if (token != null) {
-            config.headers['Authorization'] = 'Bearer' + token;
+            config.headers['Authorization']= 'Bearer ' + token;
         }
         return config;
     },

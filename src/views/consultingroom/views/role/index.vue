@@ -53,29 +53,6 @@
         </div>
       </el-dialog>
   
-      <!-- 权限分配信息对话框 -->
-      <el-dialog title="权限分配" center :visible.sync="dialogObject.allocationDiolog" :close-on-click-modal="false" width="40%" :append-to-body="true">
-        <el-tree
-          :data="permissionData"
-          ref="routerTree"
-          icon-class="el-icon-menu"
-          auto-expand-parent
-          show-checkbox
-          node-key="id"
-          :default-checked-keys="defaultCheckedKeys"
-          :default-expanded-keys="defaultCheckedKeys"
-          :props="defaultProps"
-          :highlight-current="true"
-          @check-change="handleCheckChange"
-        >
-        </el-tree>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogObject.allocationDiolog = false">取 消</el-button>
-          <el-button type="success" @click="assignPermissions()">分 配</el-button>
-          <el-button @click="$refs.routerTree.setCheckedKeys([])">清 空</el-button>
-        </div>
-      </el-dialog>
-  
       <!-- 添加角色信息对话框 -->
       <el-dialog title="角色信息" center :visible.sync="dialogObject.createVisible" :close-on-click-modal="false" width="40%">
         <el-form ref="createform" :model="roleForm" label-width="80px">
@@ -105,6 +82,7 @@
           roleId: '',
           name: '',
           descripcion: '',
+          id:0,
         },
         table: {
           roleList: [],
@@ -116,15 +94,7 @@
           allocationDiolog: false,
         },
         roleIds: [],
-        //权限数组
-        permissionData: [],
-        routerIds: [],
-        //原角色权限
-        defaultCheckedKeys: [],
-        defaultProps: {
-          children: 'children',
-          label: 'label',
-        },
+      
       };
     },
     computed: {
@@ -170,17 +140,6 @@
           this.table.roleList = returnData;
         });
       },
-      //获取路由树数据
-      constructRouteTreeData() {
-        this.$api.vueRouter.constructRouteTreeData().then((res) => {
-          const { data, success, message } = res.data;
-          if (!success) {
-            console.log(message);
-            return;
-          }
-          this.permissionData = data;
-        });
-      },
       //打开添加弹窗弹窗
       openCreateDialog() {
         this.dialogObject.createVisible = true; //打开添加弹窗
@@ -190,12 +149,7 @@
       },
       //添加角色数据
       addRole() {
-        const role = {
-          roleId: this.roleForm.roleId,
-          descripcion: this.roleForm.descripcion,
-          name: this.roleForm.name,
-        };
-        this.$api.role.addRole(role).then((res) => {
+        this.$api.role.AddRole(this.roleForm).then((res) => {
           const { data, success, message } = res.data;
           if (!success) {
             this.$message({ message: '添加失败！', type: 'error' });
@@ -248,7 +202,7 @@
             type: 'warning',
           });
         } else {
-          this.$api.role.deleteRoleIdById(this.roleIds).then((res) => {
+          this.$api.role.DeleteRoleList(this.roleIds).then((res) => {
             let { success, message } = res.data;
             if (!success) {
               console.log(message);

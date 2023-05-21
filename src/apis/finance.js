@@ -6,8 +6,8 @@ export default
         console.log(revenue);
         return ajax.post('/api/Revenue/CreateRevenueOrder',{...revenue})
     },
-    GetRevenueOrderList()
+    GetRevenueOrderList(revenue)
     {
-        return ajax.get("/api/Revenue/GetRevenueOrderList");
+        return ajax.post("/api/Revenue/GetRevenueOrderList",revenue);
     }
 }

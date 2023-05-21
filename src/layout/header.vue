@@ -11,6 +11,7 @@
       <div class="user">
         <!-- <el-avatar :size="40" shape="circle"></el-avatar> -->
         <el-dropdown>
+          <span>{{this.userInfo.userName}}</span>
           <span class="el-dropdown-link">
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
           </span>
@@ -74,16 +75,21 @@
 
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 export default {
   data() {
     return {
+      usreInfo:{},
     }
   },
   computed: {
     //将this.getDynamicTags 映射为 this.$store.getters.getDynamicTags
     ...mapGetters({ getDynamicTags: 'tagsView/getDynamicTags', userInfo: 'userInfo/getUserInfo' }),
+    ...mapState("userInfo")
+  },
+  mounted(){
+    this.userInfo=this.userInfo;
   },
   methods: {
     handleMenu() {
@@ -107,6 +113,5 @@ export default {
       this.$router.push({ name: 'login' });
     },
   },
-
 }
 </script>

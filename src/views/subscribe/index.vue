@@ -12,22 +12,21 @@
           </el-date-picker>
         </div>
         <div>
-          <el-select multiple collapse-tags style="margin-left: 20px;" placeholder="请选择预约状态" size="mini">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+          <el-select style="margin-left: 20px;" placeholder="请选择预约状态" size="mini" v-model="queryForm.reservationState">
+            <el-option v-for="item in reservationStatus" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </div>
         <div>
-          <el-select placeholder="请选择预约医生" size="mini" style="margin-left: 20px;">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+          <el-select placeholder="请选择预约医生" size="mini" style="margin-left: 20px;" v-model="queryForm.doctorId">
+            <el-option v-for="item in doctorList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </div>
       </div>
       <div class="edit_query">
-        <el-button type="success" @click="openAddSubscribe()" size="mini ">今日预约</el-button>
         <el-button type="success" @click="openAddSubscribe()" size="mini ">新增预约</el-button>
-        <el-button type="primary" @click="getPurchasePlanList()" size="mini ">查找</el-button>
+        <el-button type="primary" @click="GetRreservationList()" size="mini ">查找</el-button>
         <el-button type="primary" @click="Refresh()" size="mini ">重置</el-button>
       </div>
     </div>
@@ -67,8 +66,9 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="145px">
         <template slot-scope="scope">
-          <el-button @click="AddDisposal(scope.row)" type="text" size="small">到达分诊</el-button>
-          <el-button @click="AddDisposal(scope.row)" type="text" size="small">修改信息</el-button>
+          <el-button v-if="scope.row.reservationstateStr==='新建挂号'" @click="CreatePatientVisit(scope.row)" type="text" size="small">到达分诊</el-button>
+          <el-button v-if="scope.row.reservationstateStr==='新建挂号'"  @click="AddDisposal(scope.row)" type="text" size="small">修改信息</el-button>
+          <el-tag v-if="scope.row.reservationstateStr!=='新建挂号'" type="info">患者已到达就诊,不可操作</el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -83,9 +83,6 @@
 
     <el-dialog id="AddSubscribe" title="预约信息" center :visible.sync="dialogObject.AddSubscribe"
       :close-on-click-modal="false" :fullscreen="true">
-
-
-
       <el-row :gutter="12">
         <el-col :span="8">
           <el-card shadow="always" high="500px">
@@ -151,7 +148,7 @@
             </div>
             <div style="margin-top: 20px">
               <el-checkbox-group v-model="checkboxItem" size="mini">
-                <el-checkbox v-for="item in healItem" border :label="item.label" :value="item.value"></el-checkbox>
+                <el-checkbox v-for="item in healItem" :key="item.label" border :label="item.label" :value="item.value"></el-checkbox>
               </el-checkbox-group>
             </div>
           </el-card>
@@ -179,6 +176,7 @@ export default {
 
   data: function () {
     return {
+      reservationStatus: [{ label: "已预约", value: 1 }, { label: "已到达", value: 2 }, { label: "治疗中", value: 3 }, { label: "已结算", value: 4 },],
       patientSourceType: [{ label: "网络咨询", value: 1 }, { label: "朋友介绍", value: 2 }, { label: "家住附近", value: 3 }],
       doctorList: [],
       subscribeForm: {
@@ -196,8 +194,8 @@ export default {
       queryForm: {
         page: 1,
         row: 10,
-        patientname: '',
-        phoneNumber: '',
+        doctorId: '',
+        reservationState: '',
       },
       calendarOptions: {
         plugins: [
@@ -326,6 +324,7 @@ export default {
   methods: {
     loadData() {
       this.GetRreservationList();
+      this.GetUserByRole();
     },
     //获取医疗项目列表
     async GetHealItemInfo() {
@@ -362,9 +361,41 @@ export default {
         this.doctorList = returnData.map(x => ({ label: x.userName, value: x.userId }));
       });
     },
+    //预约分诊
+    async CreatePatientVisit(row) {
+      console.log(row);
+      const createPatientVisitForm = {
+        DoctorId: row.doctorId,
+        PatientId: row.patientId,
+        ReservationId:row.reservationId
+      }
+      await this.$api.reservation.RreservationTriage(createPatientVisitForm).then((res) => {
+        const { returnData, success, message } = res.data;
+        console.log(res.data);
+        if (!success) {
+          return;
+        }
+        this.$alert('已患者分诊，请医生到自己的工作台查看', '标题名称', {
+          confirmButtonText: '确定',
+          callback: action => {
+          }
+        });
+
+      });
+    },
     ///获取预约列表
     async GetRreservationList() {
-      await this.$api.reservation.GetRreservationList(this.queryForm).then((res) => {
+      // console.log(tiemHelper(this.endDate));
+      const RreservationForm = {
+        page: this.queryForm.page,
+        row: this.queryForm.row,
+        doctorId: this.queryForm.doctorId,
+        reservationState: this.queryForm.reservationState==''?0:this.queryForm.reservationState,
+        reservationInputDate: this.endDate[0],//this.tiemHelper(this.endDate[0]),
+        reservationEndDate: this.endDate[1]
+      }
+      console.log(RreservationForm);
+      await this.$api.reservation.GetRreservationList(RreservationForm).then((res) => {
         const { returnData, success, message } = res.data;
         if (!success) {
           return;
@@ -374,10 +405,10 @@ export default {
     },
 
     bindOptionToform() {
-      this.subscribeForm.phoneNumber=this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].phonenumber;
-      this.subscribeForm.sex=this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].sex;
-      this.subscribeForm.source=this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].source;
-      this.subscribeForm.patientId=this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].patientid;
+      this.subscribeForm.phoneNumber = this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].phonenumber;
+      this.subscribeForm.sex = this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].sex;
+      this.subscribeForm.source = this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].source;
+      this.subscribeForm.patientId = this.options.filter(x => x.patientname == this.subscribeForm.patientName)[0].patientid;
 
     },
     remoteMethod(query) {
@@ -412,8 +443,7 @@ export default {
         const { returnData, success, message } = res.data;
         if (!success) {
           return;
-        }else
-        {
+        } else {
           this.$message(message);
         }
       });

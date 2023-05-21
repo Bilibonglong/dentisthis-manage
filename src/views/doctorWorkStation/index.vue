@@ -3,11 +3,11 @@
         <div class="editbar">
             <div class="edit_btn">
                 <el-button type="info" size="mini" class="el-icon-circle-plus-outline"
-                    @click="openAddDialog()">我的分诊患者</el-button>
+                    @click="GetPatientVisitList(this.user.userId)">我的分诊患者</el-button>
             </div>
             <div class="edit_query">
-                <el-input size="mini" label-width="80px" placeholder="姓名/手机号/病历号"></el-input>
-                <el-button type="primary" @click="getPurchasePlanList()" size="mini">查找</el-button>
+                <el-input size="mini" label-width="80px" placeholder="姓名/手机号/病历号" v-model="queryForm.contains"></el-input>
+                <el-button type="primary" @click="GetPatientVisitList()" size="mini">查找</el-button>
                 <el-button type="primary" @click="Refresh()" size="mini">重置</el-button>
             </div>
         </div>
@@ -52,8 +52,8 @@
 
                     <el-button v-if="scope.row.patientVisitStatus === '新建挂号'" @click="AddDisposal(scope.row)" type="text"
                         size="small">下处置</el-button>
-                    <el-button v-if="scope.row.patientVisitStatus === '待结算'" @click="OpenRemittance(scope.row.patienVisitId)" type="text"
-                        size="small">收费</el-button>
+                    <el-button v-if="scope.row.patientVisitStatus === '待结算'"
+                        @click="OpenRemittance(scope.row.patienVisitId)" type="text" size="small">收费</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -208,17 +208,26 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations, mapState } from 'vuex';
+
 export default {
     components: {},
+    computed: { 
+        ...mapState('userInfo',['userInfo'])
+    },
     props: {},
+    mounted() {
+        this.user = this.userInfo;
+        console.log(this.user.userId);
+    },
     data() {
         return {
             selectedOptions: [],
             queryForm: {
                 page: 1,
                 row: 10,
-                patientname: '',
-                phoneNumber: '',
+                doctorId: '',
+                contains: '',
             },
             currentRow: null,
             table: {
@@ -277,10 +286,9 @@ export default {
                 TotalPrice: 0,
                 patienVisitId: '',
             },
+            usre: {},
         };
     },
-    watch: {},
-    computed: {},
     methods: {
         loadData() {
             this.GetPatientVisitList();
@@ -295,8 +303,14 @@ export default {
         },
 
         //获取已分诊的患者信息
-        async GetPatientVisitList() {
-            await this.$api.patient.GetPatientVisitList().then((res) => {
+        async GetPatientVisitList(byDoctor) {
+            const patientForm = {
+                Page: this.queryForm.page,
+                Row: this.queryForm.row,
+                Contains: this.queryForm.contains,
+                VisitDoctorId: byDoctor??"",
+            }
+            await this.$api.patient.GetPatientVisitList(patientForm).then((res) => {
                 const { returnData, success, message } = res.data;
                 console.log(res.data);
                 if (!success) {
@@ -308,7 +322,7 @@ export default {
 
         //获取医疗项目列表
         async GetHealItemInfo() {
-            await this.$api.healItem.GetHealItemInfo().then((res) => {
+            await this.$api.healItem.GetHealItemInfo({Row:100,Page:1}).then((res) => {
                 const { returnData, success, message } = res.data;
                 if (!success) {
                     return;
@@ -318,7 +332,7 @@ export default {
         },
         //获取药物清单列表
         async GetMedicines() {
-            await this.$api.medicine.GetMedicines().then((res) => {
+            await this.$api.medicine.GetMedicines({Row:100,Page:1}).then((res) => {
                 const { returnData, success, message } = res.data;
                 console.log(res.data);
                 if (!success) {
@@ -382,6 +396,7 @@ export default {
                         confirmButtonText: '确定',
                         callback: action => {
                             this.dialogObject.Remittance = false
+                            this.loadData();
                         }
                     });
                 }
@@ -389,7 +404,6 @@ export default {
         },
         AddDisposal(row) {
             this.patientForm = { ...row };
-            console.log(this.patientForm);
             this.defaultChecked();
             this.GetHealItemInfo();
             this.GetPatientVisitList();
@@ -422,15 +436,16 @@ export default {
         },
 
         selectItemRows(row) {
+            console.log(row);
             this.PatientDisposal.Items = [];//初始化items
             row.forEach(x => {
-                this.PatientDisposal.Items.push(x.itemname)
+                this.PatientDisposal.Items.push(x.itemName)
             })
             this.FeeInfo.itemprice = 0;
             this.FeeInfo.item = '';
             row.forEach(item => {
-                this.FeeInfo.itemprice += item.itemprice
-                this.FeeInfo.item += item.itemname + ";" + "\n"
+                this.FeeInfo.itemprice += item.itemPrice
+                this.FeeInfo.item += item.itemName + ";" + "\n"
             });
             this.FeeInfo.total = this.FeeInfo.medicineprice + this.FeeInfo.itemprice;
 
@@ -441,8 +456,7 @@ export default {
         },
         //重置搜索条件
         Refresh() {
-            this.queryForm.conditions = '';
-            this.queryForm.departmentId = '';
+            this.queryForm.contains = '';
             this.loadData();
         },
 
@@ -478,11 +492,9 @@ export default {
             }
         },
     },
-
     created() {
         this.loadData();
     },
-    mounted() { }
 };
 </script>
 <style lang="less" scoped>

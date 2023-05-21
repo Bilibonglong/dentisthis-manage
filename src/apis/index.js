@@ -7,6 +7,7 @@ import finance from '@/apis/finance'
 import reservation from './reservation'
 import role from './role'
 import storehouse from './storehouse'
+import home from './home'
 export default{
     login,
     employee,
@@ -16,5 +17,6 @@ export default{
     finance,
     reservation,
     role,
-    storehouse
+    storehouse,
+    home
 };

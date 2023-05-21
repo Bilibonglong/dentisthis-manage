@@ -7,32 +7,34 @@
         <el-button plain type="danger" size="mini" class="el-icon-delete" @click="deleteMedicines()">移除</el-button>
       </div>
       <div class="edit_query">
-        <el-input v-model="queryForm.ItemName" size="mini" label-width="80px" placeholder="请输入"></el-input>
-        <el-button type="primary" @click="GetHealItem()" size="mini">查找</el-button>
+        <el-input v-model="queryForm.medicineName" size="mini" label-width="80px" placeholder="请输入"></el-input>
+        <el-button type="primary" @click="GetMedicines()" size="mini">查找</el-button>
         <el-button type="primary" @click="resetQueryForm()" size="mini">重置</el-button>
       </div>
     </div>
-    <el-table :data="table.healItemList" @selection-change="selectHealItemRows" highlight-current-row border row-style="height:40px">
+    <!-- 表格 -->
+    <el-table :data="table.MedicineList" @selection-change="selectMedicinesRows" highlight-current-row border
+      row-style="height:40px">
       <el-table-column type="selection" width="45" align="center"> </el-table-column>
-      <el-table-column label="医疗项目编号" prop="itemId" align="center">
+      <el-table-column label="药品编号" prop="medicineId" align="center">
       </el-table-column>
-      <el-table-column label="医疗项目名称" prop="itemName" align="center">
+      <el-table-column label="药品名称" prop="medicineName" align="center">
       </el-table-column>
-      <el-table-column label="医疗项目描述" prop="itemDsc" align="center">
+      <el-table-column label="药品描述" prop="medicineDsc" align="center">
       </el-table-column>
-      <el-table-column label="医疗项目价格" prop="itemPrice" align="center">
+      <el-table-column label="药品价格" prop="medicinePrice" align="center">
         <template slot-scope="scope">
-          <el-input type="number" size="mini" v-model.number="scope.row.itemPrice"></el-input>
+          <el-input type="number" size="mini" v-model.number="scope.row.medicinePrice"></el-input>
         </template>
       </el-table-column>
-      <el-table-column label="医疗项目计价单位" prop="itemUnit" align="center">
+      <el-table-column label="药品计价单位" prop="unit" align="center">
       </el-table-column>
       <el-table-column fixed="right" label="编辑" width="200" align="center">
-          <template slot-scope="scope">
-            <!-- <el-button type="text" size="small" @click="openAllocationDiolog(scope.row)" icon="el-icon-edit">分配权限</el-button> -->
-            <el-button type="text" size="small" @click="UpdateHealItem(scope.row)" icon="el-icon-check">保存数据</el-button>
-          </template>
-        </el-table-column>
+        <template slot-scope="scope">
+          <!-- <el-button type="text" size="small" @click="openAllocationDiolog(scope.row)" icon="el-icon-edit">分配权限</el-button> -->
+          <el-button type="text" size="small" @click="updateMedicine(scope.row)" icon="el-icon-check">保存数据</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <!-- 分页 -->
     <div class="block">
@@ -43,27 +45,27 @@
     </div>
 
 
-    <!-- 新增医疗项目模态框 -->
+    <!-- 新增药品模态框 -->
     <el-dialog title="药品" center :visible.sync="dialogObject.addVisible" :close-on-click-modal="false" width="50%">
-      <el-form :model="addHealItemForm" ref="addHealItemForm" label-width="80px">
-        <el-form-item label="医疗项目编号" prop="userId">
-          <el-input v-model="addHealItemForm.ItemId" disabled placeholder="系统自动生成"></el-input>
+      <el-form :model="addMedicineForm" ref="addMedicineForm" label-width="80px">
+        <el-form-item label="药物编号" prop="userId">
+          <el-input v-model="addMedicineForm.MedicineId" disabled placeholder="系统自动生成"></el-input>
         </el-form-item>
-        <el-form-item label="医疗项目名称" prop="name">
-          <el-input v-model="addHealItemForm.ItemName"></el-input>
+        <el-form-item label="药物名称" prop="name">
+          <el-input v-model="addMedicineForm.MedicineName"></el-input>
         </el-form-item>
-        <el-form-item label="医疗项目描述" prop="name">
-          <el-input v-model="addHealItemForm.ItemDsc"></el-input>
+        <el-form-item label="药物描述" prop="name">
+          <el-input v-model="addMedicineForm.MedicineDsc"></el-input>
         </el-form-item>
-        <el-form-item label="医疗项目价格" prop="name">
-          <el-input-number v-model="addHealItemForm.ItemPrice"></el-input-number>
+        <el-form-item label="药物价格" prop="name">
+          <el-input-number v-model="addMedicineForm.MedicinePrice"></el-input-number>
         </el-form-item>
-        <el-form-item label="医疗项目单位" prop="name">
-          <el-input v-model="addHealItemForm.ItemUnit"></el-input>
+        <el-form-item label="单位" prop="name">
+          <el-input v-model="addMedicineForm.Unit"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="success" @click="addHealItem()">新增医疗项目</el-button>
+        <el-button type="success" @click="addMedicines()">新增药品</el-button>
         <!-- <el-button type="success" @click="dialogObject.addVisible = false">保存并到达</el-button>
             <el-button type="success" @click="addPatient()">保存并预约</el-button> -->
         <el-button @click="dialogObject.addVisible = false">取 消</el-button>
@@ -79,44 +81,44 @@ export default {
       queryForm: {
         page: 1,
         row: 10,
-        ItemName: "",
+        medicineName: "",
       },
       table: {
-        healItemList: [],
+        MedicineList: [],
         total: 0,
       },
       dialogObject: {
         addVisible: false,
       },
-      addHealItemForm: {
-        ItemId: "",
-        ItemName: "",
-        ItemDsc: "",
-        ItemPrice: 0,
-        ItemUnit: "",
+      addMedicineForm: {
+        MedicineId: "",
+        MedicineName: "",
+        MedicineDsc: "",
+        MedicinePrice: 0,
+        Unit: "",
       },
-      HealItemIds: [],
+      MedicineIds: [],
     };
   },
   methods: {
     loadData() {
-      this.GetHealItem();
+      this.GetMedicines();
     },
 
-    //获取医疗项目列表
-    async GetHealItem() {
-      await this.$api.healItem.GetHealItemInfo(this.queryForm).then((res) => {
+    //获取药物列表
+    async GetMedicines() {
+      await this.$api.medicine.GetMedicines(this.queryForm).then((res) => {
         const { returnData, success, message, count } = res.data;
         if (!success) {
           return;
         }
-        this.table.healItemList = returnData;
+        this.table.MedicineList = returnData;
         this.table.total = count;
       });
     },
-    //修改医疗项目单价
-    async UpdateHealItem(row) {
-      await this.$api.healItem.UpdateHealItem(row).then((res) => {
+    //修改药品单价
+    async updateMedicine(row) {
+      await this.$api.medicine.updateMedicine(row).then((res) => {
         const { returnData, success, message, count } = res.data;
         if (!success) {
           console.log(message)
@@ -126,13 +128,13 @@ export default {
         this.loadData();
       });
     },
-    //删除医疗项目
+    //删除药品
     async deleteMedicines() {
-      if (this.HealItemIds.length == 0) {
+      if (this.MedicineIds.length == 0) {
         this.$message({ message: '请选择药物', type: 'info' });
         return;
       }
-      await this.$api.healItem.DeleteHealItem(this.HealItemIds).then((res) => {
+      await this.$api.medicine.deleteMedicines(this.MedicineIds).then((res) => {
         const { returnData, success, message, count } = res.data;
         if (!success) {
           console.log(message)
@@ -142,9 +144,9 @@ export default {
         this.loadData();
       });
     },
-    //新增医疗项目
-    async addHealItem() {
-      await this.$api.healItem.AddHealItem(this.addHealItemForm).then((res) => {
+    //新增药品
+    async addMedicines() {
+      await this.$api.medicine.AddMedicine(this.addMedicineForm).then((res) => {
         const { returnData, success, message, count } = res.data;
         if (!success) {
           console.log(message)
@@ -154,10 +156,10 @@ export default {
         this.loadData();
       });
     },
-    selectHealItemRows(selection) {
-      this.HealItemIds = [];
+    selectMedicinesRows(selection) {
+      this.MedicineIds = [];
       selection.forEach((element) => {
-        this.HealItemIds.push(element.itemId);
+        this.MedicineIds.push(element.medicineId);
       });
     },
     //重置搜索条件
@@ -165,10 +167,12 @@ export default {
       this.queryForm.medicineName = '';
       this.loadData();
     },
+    //外层页面条数改变
     handleSizeChange(row) {
       this.queryForm.row = row;
       this.loadData();
     },
+    //外层页数改变
     handleCurrentChange(page) {
       this.queryForm.page = page;
       this.loadData();
